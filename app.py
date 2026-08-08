@@ -66,13 +66,19 @@ def create_app():
 
     @app.context_processor
     def inject_global_settings():
+        def pagination_url(page):
+            args = request.args.to_dict()
+            args['page'] = page
+            return url_for(request.endpoint or 'transactions_list', **args)
+
         return {
             'app_name': Setting.get_val('app_name', 'Mon Suivi Financier'),
             'currency': Setting.get_val('currency', 'DH'),
             'dark_mode': Setting.get_val('dark_mode', 'false') == 'true',
             'french_months': FRENCH_MONTHS,
             'current_year': datetime.now().year,
-            'today_date': date.today().strftime('%Y-%m-%d')
+            'today_date': date.today().strftime('%Y-%m-%d'),
+            'pagination_url': pagination_url
         }
 
     # Authentication Routes
